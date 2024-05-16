@@ -1,0 +1,9 @@
+{
+  "tailwindCSS.experimental.configFile": ".nuxt/nuxtui-tailwind.config.cjs",
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  }
+}
