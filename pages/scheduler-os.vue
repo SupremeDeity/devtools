@@ -20,7 +20,7 @@
                         <UInput v-model="state.burst_times" placeholder="For example: 3, 1, 2" />
                     </UFormGroup>
 
-                    <UButton type="submit" variant="solid">Run</UButton>
+                    <UButton class="font-bold px-6" type="submit" variant="solid">Run</UButton>
                 </UForm>
             </div>
 
@@ -33,23 +33,7 @@
                 </div>
                 <div class="w-full flex flex-col items-center p-4">
                     <span class="font-bold select-none">Gantt Chart</span>
-                    <div
-                        class="flex border border-primary-300 dark:border-primary-700 justify-center items-center divide-x divide-primary-300 dark:divide-primary-700 bg-primary-50 dark:bg-primary-950 rounded">
-                        <template v-for="entry in gantt_chart">
-                            <div
-                                class="select-none text-primary-600 dark:text-primary-400 w-10 h-10 flex justify-center items-center">
-                                <span class="">{{ entry.id }}</span>
-                            </div>
-                        </template>
-                    </div>
-                    <div class="flex text-center">
-                        <span class="w-10 text-gray-600 dark:text-gray-400 ">0</span>
-                        <template v-for="entry in gantt_chart">
-                            <span class="w-10 text-gray-600 dark:text-gray-400 ">{{
-                                entry.end_time
-                                }}</span>
-                        </template>
-                    </div>
+                    <GanttChart :gantt_chart="gantt_chart" />
                 </div>
 
                 <UTable class="overflow-x-auto border border-gray-300 dark:border-gray-700 rounded-lg mx-auto lg:w-max"
@@ -72,6 +56,7 @@
 <script setup lang="ts">
 import type { GanttChartEntry, Process } from "~/composables/os/process";
 import type { FormSubmitEvent } from "#ui/types";
+import GanttChart from '../components/gantt-chart.vue'
 
 const algorithms = [
     { key: "FCFS", label: "[Non Premptive] First Come First Serve (FCFS)" },
@@ -87,6 +72,8 @@ const state = reactive({
 const output = ref<Process[]>();
 const gantt_chart = ref();
 const toast = useToast();
+
+
 
 const average_times = computed(() => {
     if (!output.value)
