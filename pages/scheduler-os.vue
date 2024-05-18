@@ -29,7 +29,7 @@
                     <h3 class="text-lg font-extrabold p-2 select-none">Output</h3>
                     <UBadge v-if="state.selected_algorithm" variant="subtle">{{
                         state.selected_algorithm.key
-                        }}</UBadge>
+                    }}</UBadge>
                 </div>
                 <div class="w-full flex flex-col items-center p-4">
                     <span class="font-bold select-none">Gantt Chart</span>
@@ -54,13 +54,14 @@
 </template>
 
 <script setup lang="ts">
-import type { GanttChartEntry, Process } from "~/composables/os/process";
+import type { Process } from "~/composables/os/process";
 import type { FormSubmitEvent } from "#ui/types";
 import GanttChart from '../components/gantt-chart.vue'
+import { fcfs, sjf } from "~/composables/os/scheduler_algorithms";
 
 const algorithms = [
     { key: "FCFS", label: "[Non Premptive] First Come First Serve (FCFS)" },
-    // { key: "SJF", label: "[Non Premptive] Shortest Job First (SJF)" },
+    { key: "SJF", label: "[Non Premptive] Shortest Job First (SJF)" },
 ];
 
 const state = reactive({
@@ -143,36 +144,23 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
         })
     }
     );
-    fcfs(process);
-}
 
-function fcfs(processes: Process[]) {
-    const sorted = processes.toSorted((a, b) => a.arrival_time - b.arrival_time);
-    const chart: GanttChartEntry[] = [];
+    let algo;
+    switch (event.data.selected_algorithm?.key) {
+        case 'FCFS':
+            algo = fcfs;
+            break;
+        case 'SJF':
+            algo = sjf;
+            break;
+        default:
+            algo = fcfs;
+    }
 
-    sorted.reduce((prev, proc, index) => {
-        const arrival_time = sorted[index].arrival_time;
-        const idle_time = arrival_time - prev;
-
-        if (idle_time > 0) {
-            chart.push({ id: "-", end_time: arrival_time });
-            prev += idle_time;
-        }
-
-        const completion_time = prev + proc.burst_time;
-        const turnaround_time = completion_time - arrival_time;
-
-        sorted[index].start_time = prev;
-        sorted[index].completion_time = completion_time;
-        sorted[index].turnaround_time = turnaround_time;
-        sorted[index].waiting_time = turnaround_time - sorted[index].burst_time;
-
-        chart.push({ id: proc.id, end_time: completion_time });
-
-        return completion_time;
-    }, 0);
-
-    output.value = sorted;
+    const { process_table, chart } = algo(process);
+    output.value = process_table;
     gantt_chart.value = chart;
 }
+
+
 </script>
