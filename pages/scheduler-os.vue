@@ -2,14 +2,9 @@
     <div class="p-4 sm:p-6">
         <UCard>
             <template #header>
-                <div class="flex items-center justify-between">
-                    <h1 class="text-lg font-bold dark:text-gray-200 text-gray-800">
-                        Process Scheduler
-                    </h1>
-                    <UBadge v-if="state.selected_algorithm" variant="subtle">{{
-                        state.selected_algorithm.key
-                    }}</UBadge>
-                </div>
+                <h1 class="text-lg font-bold dark:text-gray-200 text-gray-800">
+                    Process Scheduler
+                </h1>
             </template>
             <div class="">
                 <UForm :schema="scheduler_form_schema" :state="state" class="space-y-4" @submit="onSubmit">
@@ -30,25 +25,29 @@
             </div>
 
             <template v-if="output" #footer>
-                <h3 class="text-lg font-extrabold p-2 select-none">Output</h3>
-
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-extrabold p-2 select-none">Output</h3>
+                    <UBadge v-if="state.selected_algorithm" variant="subtle">{{
+                        state.selected_algorithm.key
+                        }}</UBadge>
+                </div>
                 <div class="w-full flex flex-col items-center p-4">
                     <span class="font-bold select-none">Gantt Chart</span>
                     <div
-                        class="flex border border-primary-300 dark:border-primary-700 w-max justify-center items-center divide-x divide-primary-300 dark:divide-primary-700 bg-primary-50 dark:bg-primary-950 rounded">
+                        class="flex border border-primary-300 dark:border-primary-700 justify-center items-center divide-x divide-primary-300 dark:divide-primary-700 bg-primary-50 dark:bg-primary-950 rounded">
                         <template v-for="entry in gantt_chart">
-                            <div class="select-none text-primary-600 dark:text-primary-400 px-4 py-2">
-                                <span v-if="entry.id === -1">-</span>
-                                <span v-else class="">{{ entry.id }}</span>
+                            <div
+                                class="select-none text-primary-600 dark:text-primary-400 w-10 h-10 flex justify-center items-center">
+                                <span class="">{{ entry.id }}</span>
                             </div>
                         </template>
                     </div>
-                    <div>
-                        <span class="px-4 text-gray-600 dark:text-gray-400">0</span>
+                    <div class="flex text-center">
+                        <span class="w-10 text-gray-600 dark:text-gray-400 ">0</span>
                         <template v-for="entry in gantt_chart">
-                            <span class="px-4 text-gray-600 dark:text-gray-400">{{
+                            <span class="w-10 text-gray-600 dark:text-gray-400 ">{{
                                 entry.end_time
-                            }}</span>
+                                }}</span>
                         </template>
                     </div>
                 </div>
@@ -114,9 +113,9 @@ const average_times = computed(() => {
 
 
 async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
-    console.log(event.data);
-    const arrival_times = event.data.arrival_times.trim().split(/\s*,\s*/);
-    const burst_times = event.data.burst_times.trim().split(/\s*,\s*/);
+    const arrival_times = event.data.arrival_times.trim().split(/[ ,]+/);
+    const burst_times = event.data.burst_times.trim().split(/[ ,]+/);
+
     if (arrival_times.length !== burst_times.length) {
         toast.add({
             title: "Error",
@@ -127,13 +126,35 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
         return;
     }
 
+    if (!burst_times.every((val) => Number.parseInt(val) > 0)) {
+        toast.add({
+            title: "Error",
+            description: "Burst time cannot be 0 or less",
+            icon: "i-heroicons-x-circle",
+            color: "red",
+        });
+        return;
+    }
+
     const process: Process[] = [];
-    arrival_times.forEach((val, index) =>
+    arrival_times.forEach((val, index) => {
+        const at = Number.parseInt(val);
+        const bt = Number.parseInt(burst_times[index]);
+        if (bt === undefined || at === undefined) {
+            toast.add({
+                title: "Error",
+                description: "Input could not be parsed",
+                icon: "i-heroicons-x-circle",
+                color: "red",
+            });
+            return;
+        }
         process.push({
-            id: index + 1,
-            arrival_time: Number.parseInt(val),
-            burst_time: Number.parseInt(burst_times[index]),
+            id: `P${index + 1}`,
+            arrival_time: at,
+            burst_time: bt,
         })
+    }
     );
     fcfs(process);
 }
@@ -147,9 +168,8 @@ function fcfs(processes: Process[]) {
         const idle_time = arrival_time - prev;
 
         if (idle_time > 0) {
-            chart.push({ id: -1, end_time: idle_time });
+            chart.push({ id: "-", end_time: arrival_time });
             prev += idle_time;
-            console.log(prev);
         }
 
         const completion_time = prev + proc.burst_time;

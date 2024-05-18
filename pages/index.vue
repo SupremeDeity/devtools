@@ -14,12 +14,12 @@
             </template>
         </UAlert>
         <NuxtLink class="block w-min" href="/scheduler-os">
-            <UCard
-                class="w-max mt-4 !bg-primary-900 border !border-primary-400 hover:!bg-primary-950 hover:!border-primary-600 transition-colors">
+            <div
+                class="w-max mt-4 rounded-lg bg-primary-100 dark:bg-primary-900 border border-primary-600 dark:border-primary-400 hover:bg-primary-200 hover:dark:bg-primary-950 hover:border-primary-400 hover:dark:border-primary-600 transition-colors">
                 <div class="size-32 flex items-center justify-center font-bold text-lg text-center">
                     Process Scheduler
                 </div>
-            </UCard>
+            </div>
         </NuxtLink>
     </div>
 </template>

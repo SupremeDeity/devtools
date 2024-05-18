@@ -1,7 +1,7 @@
 import {z} from "zod";
 
 export type Process = {
-    id: number,
+    id: string,
     arrival_time: number,
     burst_time: number,
     start_time?: number,
@@ -11,7 +11,7 @@ export type Process = {
 }
 
 export type GanttChartEntry = {
-    id: number,
+    id: string,
     end_time: number
 }
 
