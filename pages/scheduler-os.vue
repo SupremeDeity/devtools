@@ -29,7 +29,7 @@
                     <h3 class="text-lg font-extrabold p-2 select-none">Output</h3>
                     <UBadge v-if="state.selected_algorithm" variant="subtle">{{
                         state.selected_algorithm.key
-                    }}</UBadge>
+                        }}</UBadge>
                 </div>
                 <div class="w-full flex flex-col items-center p-4">
                     <span class="font-bold select-none">Gantt Chart</span>
@@ -118,6 +118,15 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
         toast.add({
             title: "Error",
             description: "Burst time cannot be 0 or less",
+            icon: "i-heroicons-x-circle",
+            color: "red",
+        });
+        return;
+    }
+    if (!arrival_times.every((val) => Number.parseInt(val) > 0)) {
+        toast.add({
+            title: "Error",
+            description: "Arrival time cannot be negative",
             icon: "i-heroicons-x-circle",
             color: "red",
         });
