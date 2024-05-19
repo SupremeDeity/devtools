@@ -123,7 +123,7 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
         });
         return;
     }
-    if (!arrival_times.every((val) => Number.parseInt(val) > 0)) {
+    if (!arrival_times.every((val) => Number.parseInt(val) >= 0)) {
         toast.add({
             title: "Error",
             description: "Arrival time cannot be negative",

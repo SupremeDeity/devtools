@@ -31,48 +31,39 @@ export function fcfs(processes: Process[]) {
 }
 
 export function sjf(processes: Process[]) {
-  const process_table = processes.toSorted(
-    (a, b) => a.arrival_time - b.arrival_time
-  );
+  const process_table = processes.sort((a, b) => a.arrival_time - b.arrival_time);
   const chart: GanttChartEntry[] = [];
 
   let current_time = 0;
-  const ready_queue = [];
-  const copy = [...process_table];
+  const ready_queue: Process[] = [];
+  const completed_processes: Process[] = [];
 
-  while (copy.length > 0) {
-    const new_processes = copy
-      .filter((val) => val.arrival_time <= current_time)
-      .sort((a, b) => a.burst_time - b.burst_time);
-    if (new_processes.length > 0) {
-      ready_queue.push(...new_processes);
+  while (process_table.length > 0 || ready_queue.length > 0) {
+    while (process_table.length > 0 && process_table[0].arrival_time <= current_time) {
+      ready_queue.push(process_table.shift()!);
     }
-    if (new_processes.length <= 0 && copy.length > 0) {
-      const idle_time = copy[0].arrival_time - current_time;
-      current_time = copy[0].arrival_time;
-      if (idle_time > 0) {
-        chart.push({ id: "-", end_time: current_time });
-        continue;
-      }
-    }
-    if (ready_queue.length > 0) {
-      const current_process = ready_queue.shift(); // Remove from the ready queue
-      const index = process_table.indexOf(current_process!);
-      const cIndex = copy.indexOf(current_process!);
-      copy.splice(cIndex, 1); // Mark as completed
 
-      process_table[index].start_time = current_time;
-      const completion_time = current_time + current_process!.burst_time;
-      process_table[index].completion_time = completion_time;
-      current_time += current_process!.burst_time;
-      const turnaround_time = completion_time - current_process!.arrival_time;
-      process_table[index].turnaround_time = turnaround_time;
-      process_table[index].waiting_time =
-        turnaround_time - process_table[index].burst_time;
+    ready_queue.sort((a, b) => a.burst_time - b.burst_time);
 
-      chart.push({ id: current_process!.id, end_time: completion_time });
+    if (ready_queue.length === 0) {
+      current_time = process_table[0].arrival_time;
+      chart.push({ id: "-", end_time: current_time });
+      continue;
     }
+
+    const current_process = ready_queue.shift()!;
+    const completion_time = current_time + current_process.burst_time;
+
+    current_process.start_time = current_time;
+    current_process.completion_time = completion_time;
+    current_process.turnaround_time = completion_time - current_process.arrival_time;
+    current_process.waiting_time = current_process.turnaround_time - current_process.burst_time;
+
+    current_time = completion_time;
+
+    completed_processes.push(current_process);
+    chart.push({ id: current_process.id, end_time: completion_time });
   }
 
-  return { process_table, chart };
+  return { process_table: completed_processes, chart };
 }
