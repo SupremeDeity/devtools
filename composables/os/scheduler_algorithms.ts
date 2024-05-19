@@ -86,7 +86,6 @@ export function rr(processes: Process[], time_quantum: number) {
 }
 
 export function npp(processes: Process[]) {
-  // Sort the processes by arrival time and priority
   processes.sort((a, b) => {
     if (a.arrival_time !== b.arrival_time) {
       return a.arrival_time - b.arrival_time;
@@ -95,15 +94,13 @@ export function npp(processes: Process[]) {
     }
   });
 
-  const processTable = processes.slice(); // Copy of the original process array
-  const chart = []; // Gantt chart to store the execution sequence
-  let currentTime = 0; // Current time
+  const processTable = processes.slice();
+  const chart = [];
+  let currentTime = 0;
 
-  // Keep executing processes until the process table is empty
   while (processTable.length > 0) {
     let selectedProcess = null;
 
-    // Find the process with the highest priority that has arrived
     for (const process of processTable) {
       if (process.arrival_time <= currentTime) {
         selectedProcess = process;
@@ -111,7 +108,6 @@ export function npp(processes: Process[]) {
       }
     }
 
-    // If there are no processes that have arrived yet, move time to the arrival time of the next process
     if (selectedProcess === null) {
       const idle_time = processTable[0].arrival_time - currentTime;
 
@@ -122,7 +118,6 @@ export function npp(processes: Process[]) {
       continue;
     }
 
-    // Find the process with the highest priority among the processes that have arrived
     for (const process of processTable) {
       if (
         process.arrival_time <= currentTime &&
@@ -132,32 +127,26 @@ export function npp(processes: Process[]) {
       }
     }
 
-    // Update chart
     chart.push({
       id: selectedProcess.id,
       start_time: currentTime,
       end_time: currentTime + selectedProcess.burst_time,
     });
 
-    // Update current time
+    selectedProcess.start_time = currentTime;
     currentTime += selectedProcess.burst_time;
-
-    // Find the index of the selected process in the process table
     const index = processTable.findIndex((p) => p.id === selectedProcess.id);
-
-    // Remove the selected process from the process table
     processTable.splice(index, 1);
 
-    // Calculate turnaround time and waiting time for the selected process
     selectedProcess.completion_time = currentTime;
     selectedProcess.turnaround_time =
       selectedProcess.completion_time - selectedProcess.arrival_time;
     selectedProcess.waiting_time =
       selectedProcess.turnaround_time - selectedProcess.burst_time;
+      
 
-    // Adjust current time to the completion time of the selected process
     currentTime = selectedProcess.completion_time;
   }
 
-  return { process_table: processes, chart }; // Return the Gantt chart and the updated process table
+  return { process_table: processes, chart };
 }
