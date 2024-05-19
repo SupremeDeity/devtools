@@ -20,6 +20,14 @@
                         <UInput v-model="state.burst_times" placeholder="For example: 3, 1, 2" />
                     </UFormGroup>
 
+                    <UFormGroup v-if="state.selected_algorithm.key === 'RR'" label="Time Quantum" name="time_quantum">
+                        <UInput type="number" v-model="state.time_quantum" placeholder="For example: 3" />
+                    </UFormGroup>
+
+                    <UFormGroup v-if="state.selected_algorithm.key === 'NPP'" label="Priorities" name="priorities">
+                        <UInput v-model="state.priorities" placeholder="Lower# = Higher priority" />
+                    </UFormGroup>
+
                     <UButton class="font-bold px-6" type="submit" variant="solid">Run</UButton>
                 </UForm>
             </div>
@@ -29,7 +37,7 @@
                     <h3 class="text-lg font-extrabold p-2 select-none">Output</h3>
                     <UBadge v-if="state.selected_algorithm" variant="subtle">{{
                         state.selected_algorithm.key
-                        }}</UBadge>
+                    }}</UBadge>
                 </div>
                 <div class="w-full flex flex-col items-center p-4">
                     <span class="font-bold select-none">Gantt Chart</span>
@@ -57,24 +65,27 @@
 import type { Process } from "~/composables/os/process";
 import type { FormSubmitEvent } from "#ui/types";
 import GanttChart from '../components/gantt-chart.vue'
-import { fcfs, sjf } from "~/composables/os/scheduler_algorithms";
+import { fcfs, npp, rr, sjf } from "~/composables/os/scheduler_algorithms";
 
 const algorithms = [
-    { key: "FCFS", label: "[Non Premptive] First Come First Serve (FCFS)" },
+    { key: "FCFS", label: "First Come First Serve (FCFS)" },
     { key: "SJF", label: "[Non Premptive] Shortest Job First (SJF)" },
+    { key: "NPP", label: "[Non Premptive] Priority (NPP)" },
+    // { key: "RR", label: "Round Robin (RR)" },
+    // { key: "SRTF", label: "[Premptive] Shortest Remaining Time First (SRTF/SJF)" },
 ];
 
 const state = reactive({
     arrival_times: undefined,
     burst_times: undefined,
     selected_algorithm: algorithms[0],
+    time_quantum: undefined,
+    priorities: undefined,
 });
 
 const output = ref<Process[]>();
 const gantt_chart = ref();
 const toast = useToast();
-
-
 
 const average_times = computed(() => {
     if (!output.value)
@@ -103,6 +114,8 @@ const average_times = computed(() => {
 async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
     const arrival_times = event.data.arrival_times.trim().split(/[ ,]+/);
     const burst_times = event.data.burst_times.trim().split(/[ ,]+/);
+    const priorities = event.data?.priorities?.trim().split(/[ ,]+/);
+    const selected_algorithm = event.data.selected_algorithm!;
 
     if (arrival_times.length !== burst_times.length) {
         toast.add({
@@ -112,6 +125,18 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
             color: "red",
         });
         return;
+    }
+
+    if ((selected_algorithm?.key === "NPP" || selected_algorithm?.key === "PPP")) {
+        if (priorities?.length !== arrival_times.length || priorities.length !== burst_times.length) {
+            toast.add({
+                title: "Error",
+                description: "Length of arrival times, burst times and priorities must match.",
+                icon: "i-heroicons-x-circle",
+                color: "red",
+            });
+            return;
+        }
     }
 
     if (!burst_times.every((val) => Number.parseInt(val) > 0)) {
@@ -137,39 +162,58 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
     arrival_times.forEach((val, index) => {
         const at = Number.parseInt(val);
         const bt = Number.parseInt(burst_times[index]);
+        let p;
+
         if (bt === undefined || at === undefined) {
             toast.add({
                 title: "Error",
-                description: "Input could not be parsed",
+                description: "Burst times or Arrival times could not be parsed",
                 icon: "i-heroicons-x-circle",
                 color: "red",
             });
             return;
         }
+        if (selected_algorithm?.key === "NPP" || selected_algorithm?.key === "PPP") {
+            p = Number.parseInt(priorities![index]);
+            if (p === undefined) {
+                toast.add({
+                    title: "Error",
+                    description: "Priorities could not be parsed",
+                    icon: "i-heroicons-x-circle",
+                    color: "red",
+                });
+            }
+        }
         process.push({
             id: `P${index + 1}`,
             arrival_time: at,
             burst_time: bt,
+            priority: p
         })
     }
     );
 
     let algo;
-    switch (event.data.selected_algorithm?.key) {
+    switch (selected_algorithm?.key) {
         case 'FCFS':
             algo = fcfs;
             break;
         case 'SJF':
             algo = sjf;
             break;
+        case 'RR':
+            algo = rr;
+            break;
+        case 'NPP':
+            algo = npp;
+            break;
         default:
             algo = fcfs;
     }
 
-    const { process_table, chart } = algo(process);
+    const { process_table, chart } = algo(process, 3);
     output.value = process_table;
     gantt_chart.value = chart;
 }
-
 
 </script>

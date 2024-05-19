@@ -8,6 +8,7 @@ export type Process = {
     completion_time?: number,
     turnaround_time?: number,
     waiting_time?: number,
+    priority?: number
 }
 
 export type GanttChartEntry = {
@@ -28,9 +29,12 @@ export const process_columns = [
 export const scheduler_form_schema = z.object({
     arrival_times: z.string(),
     burst_times: z.string(),
+    priorities: z.string().optional(),
     selected_algorithm: z
         .object({ key: z.string(), label: z.string() })
         .optional(),
+    time_quantum: z.number().optional(),
+    
 });
 
 export type SchedulerFormSchema = z.output<typeof scheduler_form_schema>;
