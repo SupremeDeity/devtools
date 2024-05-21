@@ -77,6 +77,81 @@ export function sjf(processes: Process[]) {
   return { process_table: completed_processes, chart };
 }
 
+export function srtf(processes: Process[]) {
+  processes.sort((a, b) => a.arrival_time - b.arrival_time);
+
+  const n = processes.length;
+  const chart: GanttChartEntry[] = [];
+  const completedProcesses: Process[] = [];
+  let currentTime = processes[0].arrival_time;
+  let completed = 0;
+  const remainingBurstTimes = processes.map((p) => p.burst_time);
+  let shortestRemainingTimeIdx: number;
+
+  if (currentTime > 0) {
+    chart.push({ id: "-", end_time: currentTime });
+  }
+
+  while (completed < n) {
+    shortestRemainingTimeIdx = -1;
+    let shortestRemainingTime = Number.MAX_VALUE;
+
+    for (let i = 0; i < n; i++) {
+      if (
+        processes[i].arrival_time <= currentTime &&
+        remainingBurstTimes[i] > 0 &&
+        remainingBurstTimes[i] < shortestRemainingTime
+      ) {
+        shortestRemainingTime = remainingBurstTimes[i];
+        shortestRemainingTimeIdx = i;
+      }
+    }
+
+    if (shortestRemainingTimeIdx === -1) {
+      const nextArrivalTime = processes.find(
+        (p) => p.arrival_time > currentTime
+      )?.arrival_time;
+      if (nextArrivalTime !== undefined) {
+        chart.push({ id: "-", end_time: nextArrivalTime });
+        currentTime = nextArrivalTime;
+      } else {
+        currentTime++;
+      }
+      continue;
+    }
+
+    if (
+      chart.length === 0 ||
+      chart[chart.length - 1].id !== processes[shortestRemainingTimeIdx].id
+    ) {
+      chart.push({
+        id: processes[shortestRemainingTimeIdx].id,
+        end_time: currentTime + 1,
+      });
+    } else {
+      chart[chart.length - 1].end_time++;
+    }
+
+    remainingBurstTimes[shortestRemainingTimeIdx]--;
+    currentTime++;
+
+    if (remainingBurstTimes[shortestRemainingTimeIdx] === 0) {
+      const completedProcess = { ...processes[shortestRemainingTimeIdx] };
+      completedProcess.completion_time = currentTime;
+      completedProcess.turnaround_time =
+        completedProcess.completion_time - completedProcess.arrival_time;
+      completedProcess.waiting_time =
+        completedProcess.turnaround_time - completedProcess.burst_time;
+      completedProcess.start_time =
+        completedProcess.completion_time - completedProcess.burst_time;
+      completedProcesses.push(completedProcess);
+      completed++;
+    }
+  }
+
+  return { chart, process_table: completedProcesses };
+}
+
 export function npp(processes: Process[]) {
   processes.sort((a, b) => {
     if (a.arrival_time !== b.arrival_time) {

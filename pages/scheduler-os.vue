@@ -68,7 +68,7 @@
 import type { Process } from "~/composables/os/process";
 import type { FormSubmitEvent } from "#ui/types";
 import GanttChart from "../components/gantt-chart.vue";
-import { fcfs, npp, pp, sjf } from "~/composables/os/scheduler_algorithms";
+import { fcfs, npp, pp, sjf, srtf } from "~/composables/os/scheduler_algorithms";
 
 const algorithms = [
     { key: "FCFS", label: "First Come First Serve (FCFS)" },
@@ -179,7 +179,7 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
                 color: "red",
             });
             return false;
-        } else if (parsedNum <= 0) {
+        } else if (parsedNum < 0) {
             toast.add({
                 title: "Error",
                 description: "Arrival time cannot be negative",
@@ -221,8 +221,8 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
         case "SJF":
             algo = sjf;
             break;
-            // case "SRTF":
-            //     algo = srtf;
+        case "SRTF":
+            algo = srtf;
             break;
         case "PP":
             algo = pp;
