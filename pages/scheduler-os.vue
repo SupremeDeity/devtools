@@ -26,7 +26,7 @@
 
                     <UFormGroup v-if="
                         state.selected_algorithm.key === 'NPP' ||
-                        state.selected_algorithm.key === 'PPP'
+                        state.selected_algorithm.key === 'PP'
                     " label="Priorities" name="priorities">
                         <UInput v-model="state.priorities" placeholder="Lower# = Higher priority" />
                     </UFormGroup>
@@ -68,12 +68,13 @@
 import type { Process } from "~/composables/os/process";
 import type { FormSubmitEvent } from "#ui/types";
 import GanttChart from "../components/gantt-chart.vue";
-import { fcfs, npp, rr, sjf } from "~/composables/os/scheduler_algorithms";
+import { fcfs, npp, pp, sjf } from "~/composables/os/scheduler_algorithms";
 
 const algorithms = [
     { key: "FCFS", label: "First Come First Serve (FCFS)" },
     { key: "SJF", label: "[Non Premptive] Shortest Job First (SJF)" },
     { key: "NPP", label: "[Non Premptive] Priority (NPP)" },
+    { key: "PP", label: "[Premptive] Priority (PP)" },
     // { key: "RR", label: "Round Robin (RR)" },
     // { key: "SRTF", label: "[Premptive] Shortest Remaining Time First (SRTF/SJF)" },
 ];
@@ -129,7 +130,7 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
         return;
     }
 
-    if (selected_algorithm?.key === "NPP" || selected_algorithm?.key === "PPP") {
+    if (selected_algorithm?.key === "NPP" || selected_algorithm?.key === "PP") {
         if (
             priorities?.length !== arrival_times.length ||
             priorities.length !== burst_times.length
@@ -189,10 +190,7 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
         }
 
         let p;
-        if (
-            selected_algorithm?.key === "NPP" ||
-            selected_algorithm?.key === "PPP"
-        ) {
+        if (selected_algorithm?.key === "NPP" || selected_algorithm?.key === "PP") {
             p = Number.parseInt(priorities![index]);
             if (p === undefined) {
                 toast.add({
@@ -223,8 +221,8 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
         case "SJF":
             algo = sjf;
             break;
-        case "RR":
-            algo = rr;
+        case "PP":
+            algo = pp;
             break;
         case "NPP":
             algo = npp;
@@ -233,7 +231,7 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
             algo = fcfs;
     }
 
-    const { process_table, chart } = algo(process, 3);
+    const { process_table, chart } = algo(process);
     output.value = process_table;
     gantt_chart.value = chart;
     algorithmRef.value = selected_algorithm.key;

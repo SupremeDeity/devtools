@@ -1,3 +1,5 @@
+import type { GanttChartEntry } from "./process";
+
 export function fcfs(processes: Process[]) {
   const process_table = processes.toSorted(
     (a, b) => a.arrival_time - b.arrival_time
@@ -75,16 +77,6 @@ export function sjf(processes: Process[]) {
   return { process_table: completed_processes, chart };
 }
 
-export function rr(processes: Process[], time_quantum: number) {
-  const process_table = processes.sort(
-    (a, b) => a.arrival_time - b.arrival_time
-  );
-  const chart: GanttChartEntry[] = [];
-  const ready_queue = [];
-
-  return { process_table, chart };
-}
-
 export function npp(processes: Process[]) {
   processes.sort((a, b) => {
     if (a.arrival_time !== b.arrival_time) {
@@ -94,8 +86,8 @@ export function npp(processes: Process[]) {
     }
   });
 
-  const processTable = processes.slice();
-  const chart = [];
+  const processTable: Process[] = processes.slice();
+  const chart: GanttChartEntry[] = [];
   let currentTime = 0;
 
   while (processTable.length > 0) {
@@ -129,7 +121,6 @@ export function npp(processes: Process[]) {
 
     chart.push({
       id: selectedProcess.id,
-      start_time: currentTime,
       end_time: currentTime + selectedProcess.burst_time,
     });
 
@@ -143,10 +134,69 @@ export function npp(processes: Process[]) {
       selectedProcess.completion_time - selectedProcess.arrival_time;
     selectedProcess.waiting_time =
       selectedProcess.turnaround_time - selectedProcess.burst_time;
-      
 
     currentTime = selectedProcess.completion_time;
   }
 
   return { process_table: processes, chart };
+}
+
+export function pp(processes: Process[]) {
+  processes.sort((a, b) => a.arrival_time - b.arrival_time);
+
+    const n = processes.length;
+    const chart: GanttChartEntry[] = [];
+    const remainingBurstTimes = processes.map(p => p.burst_time);
+    let currentTime = Math.min(...processes.map(p => p.arrival_time));
+    let completed = 0;
+    let lastProcessId = '';
+    
+    while (completed < n) {
+        let idx = -1;
+        let highestPriority = Number.MAX_VALUE;
+
+        for (let i = 0; i < n; i++) {
+            if (processes[i].arrival_time <= currentTime && remainingBurstTimes[i] > 0 && processes[i].priority! < highestPriority) {
+                highestPriority = processes[i].priority!;
+                idx = i;
+            }
+        }
+
+        if (idx === -1) {
+            currentTime++;
+            continue;
+        }
+
+        if (lastProcessId !== processes[idx].id) {
+            chart.push({ id: processes[idx].id, end_time: currentTime });
+            lastProcessId = processes[idx].id;
+        }
+
+        if (processes[idx].start_time === undefined) {
+            processes[idx].start_time = currentTime;
+        }
+
+        remainingBurstTimes[idx]--;
+        currentTime++;
+
+        if (remainingBurstTimes[idx] === 0) {
+            processes[idx].completion_time = currentTime;
+            processes[idx].turnaround_time = processes[idx].completion_time! - processes[idx].arrival_time;
+            processes[idx].waiting_time = processes[idx].turnaround_time! - processes[idx].burst_time;
+            completed++;
+        }
+    }
+
+    chart.forEach((entry, index) => {
+        if (index < chart.length - 1) {
+            entry.end_time = chart[index + 1].end_time;
+        } else {
+            const lastProcess = processes.find(p => p.id === entry.id);
+            if (lastProcess) {
+                entry.end_time = lastProcess.completion_time!;
+            }
+        }
+    });
+
+    return { process_table: processes, chart };
 }
