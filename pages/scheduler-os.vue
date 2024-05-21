@@ -148,7 +148,7 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
 
     const btCon = burst_times.every((val) => {
         const parsedNum = Number.parseInt(val);
-        if (parsedNum === undefined) {
+        if (Number.isNan(parsedNum)) {
             toast.add({
                 title: "Error",
                 description: "Burst times cannot be parsed",
@@ -171,7 +171,7 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
     const process: Process[] = [];
     const atCon = arrival_times.every((val, index) => {
         const parsedNum = Number.parseInt(val);
-        if (parsedNum === undefined) {
+        if (Number.isNan(parsedNum)) {
             toast.add({
                 title: "Error",
                 description: "Arrival times cannot be parsed",
@@ -192,7 +192,7 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
         let p;
         if (selected_algorithm?.key === "NPP" || selected_algorithm?.key === "PP") {
             p = Number.parseInt(priorities![index]);
-            if (p === undefined) {
+            if (Number.isNan(p)) {
                 toast.add({
                     title: "Error",
                     description: "Priorities could not be parsed",
