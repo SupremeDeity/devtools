@@ -144,59 +144,74 @@ export function npp(processes: Process[]) {
 export function pp(processes: Process[]) {
   processes.sort((a, b) => a.arrival_time - b.arrival_time);
 
-    const n = processes.length;
-    const chart: GanttChartEntry[] = [];
-    const remainingBurstTimes = processes.map(p => p.burst_time);
-    let currentTime = Math.min(...processes.map(p => p.arrival_time));
-    let completed = 0;
-    let lastProcessId = '';
-    
-    while (completed < n) {
-        let idx = -1;
-        let highestPriority = Number.MAX_VALUE;
+  const n = processes.length;
+  const chart: GanttChartEntry[] = [];
+  const remainingBurstTimes = processes.map((p) => p.burst_time);
+  let currentTime = Math.min(...processes.map((p) => p.arrival_time));
+  let completed = 0;
 
-        for (let i = 0; i < n; i++) {
-            if (processes[i].arrival_time <= currentTime && remainingBurstTimes[i] > 0 && processes[i].priority! < highestPriority) {
-                highestPriority = processes[i].priority!;
-                idx = i;
-            }
-        }
+  if (currentTime > 0) {
+    chart.push({ id: "-", end_time: currentTime });
+  }
 
-        if (idx === -1) {
-            currentTime++;
-            continue;
-        }
+  while (completed < n) {
+    let idx = -1;
+    let highestPriority = Number.MAX_VALUE;
 
-        if (lastProcessId !== processes[idx].id) {
-            chart.push({ id: processes[idx].id, end_time: currentTime });
-            lastProcessId = processes[idx].id;
-        }
-
-        if (processes[idx].start_time === undefined) {
-            processes[idx].start_time = currentTime;
-        }
-
-        remainingBurstTimes[idx]--;
-        currentTime++;
-
-        if (remainingBurstTimes[idx] === 0) {
-            processes[idx].completion_time = currentTime;
-            processes[idx].turnaround_time = processes[idx].completion_time! - processes[idx].arrival_time;
-            processes[idx].waiting_time = processes[idx].turnaround_time! - processes[idx].burst_time;
-            completed++;
-        }
+    for (let i = 0; i < n; i++) {
+      if (
+        processes[i].arrival_time <= currentTime &&
+        remainingBurstTimes[i] > 0 &&
+        processes[i].priority! < highestPriority
+      ) {
+        highestPriority = processes[i].priority!;
+        idx = i;
+      }
     }
 
-    chart.forEach((entry, index) => {
-        if (index < chart.length - 1) {
-            entry.end_time = chart[index + 1].end_time;
-        } else {
-            const lastProcess = processes.find(p => p.id === entry.id);
-            if (lastProcess) {
-                entry.end_time = lastProcess.completion_time!;
-            }
-        }
-    });
+    if (idx === -1) {
+      currentTime++;
+      if (chart[chart.length - 1].id === "-")
+        chart[chart.length - 1].end_time = currentTime;
+      else chart.push({ id: "-", end_time: currentTime });
+      continue;
+    }
 
-    return { process_table: processes, chart };
+    if (
+      chart.length === 0 ||
+      chart[chart.length - 1].id !== processes[idx].id
+    ) {
+      chart.push({ id: processes[idx].id, end_time: currentTime });
+    }
+
+    if (processes[idx].start_time === undefined) {
+      processes[idx].start_time = currentTime;
+    }
+
+    remainingBurstTimes[idx]--;
+    currentTime++;
+
+    if (remainingBurstTimes[idx] === 0) {
+      processes[idx].completion_time = currentTime;
+      processes[idx].turnaround_time =
+        processes[idx].completion_time! - processes[idx].arrival_time;
+      processes[idx].waiting_time =
+        processes[idx].turnaround_time! - processes[idx].burst_time;
+      completed++;
+    }
+  }
+
+  // Update the end_time for each entry in the Gantt chart
+  chart.forEach((entry, index) => {
+    if (index < chart.length - 1) {
+      entry.end_time = chart[index + 1].end_time;
+    } else {
+      const lastProcess = processes.find((p) => p.id === entry.id);
+      if (lastProcess) {
+        entry.end_time = lastProcess.completion_time!;
+      }
+    }
+  });
+
+  return { process_table: processes, chart };
 }

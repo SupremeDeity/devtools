@@ -40,7 +40,7 @@
                     <h3 class="text-lg font-extrabold p-2 select-none">Output</h3>
                     <UBadge v-if="state.selected_algorithm" variant="subtle">{{
                         algorithmRef
-                    }}</UBadge>
+                        }}</UBadge>
                 </div>
                 <div class="w-full flex flex-col items-center p-4">
                     <span class="font-bold select-none">Gantt Chart</span>
@@ -73,10 +73,10 @@ import { fcfs, npp, pp, sjf } from "~/composables/os/scheduler_algorithms";
 const algorithms = [
     { key: "FCFS", label: "First Come First Serve (FCFS)" },
     { key: "SJF", label: "[Non Premptive] Shortest Job First (SJF)" },
+    { key: "SRTF", label: "[Premptive] Shortest Remaining Time First (SRTF/SJF)" },
     { key: "NPP", label: "[Non Premptive] Priority (NPP)" },
     { key: "PP", label: "[Premptive] Priority (PP)" },
     // { key: "RR", label: "Round Robin (RR)" },
-    // { key: "SRTF", label: "[Premptive] Shortest Remaining Time First (SRTF/SJF)" },
 ];
 
 const state = reactive({
@@ -220,6 +220,9 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
             break;
         case "SJF":
             algo = sjf;
+            break;
+            // case "SRTF":
+            //     algo = srtf;
             break;
         case "PP":
             algo = pp;
