@@ -290,3 +290,87 @@ export function pp(processes: Process[]) {
 
   return { process_table: processes, chart };
 }
+
+export function rr(processes: Process[], timeQuantum: number): { process_table: Process[], chart: GanttChartEntry[] } {
+    processes.sort((a, b) => a.arrival_time - b.arrival_time);
+
+    const n = processes.length;
+    const chart: GanttChartEntry[] = [];
+    const completedProcesses: Process[] = [];
+    const remainingBurstTimes = processes.map(p => p.burst_time);
+    const readyQueue: Process[] = [];
+    let currentTime = 0;
+    let completed = 0;
+
+    // Initialize the ready queue with processes that have arrived at the start
+    for (let i = 0; i < n; i++) {
+        if (processes[i].arrival_time <= currentTime) {
+            readyQueue.push(processes[i]);
+        }
+    }
+
+    while (completed < n) {
+        if (readyQueue.length === 0) {
+            // If the ready queue is empty, fast forward to the next process's arrival time
+            const nextArrivalTime = Math.min(...processes.map(p => p.arrival_time).filter(t => t > currentTime));
+            
+            if (nextArrivalTime > currentTime) {
+                // Add idle time to the chart
+                chart.push({ id: "-", end_time: nextArrivalTime });
+                currentTime = nextArrivalTime;
+            }
+            
+            for (let i = 0; i < n; i++) {
+                if (processes[i].arrival_time <= currentTime && !readyQueue.includes(processes[i]) && remainingBurstTimes[i] > 0) {
+                    readyQueue.push(processes[i]);
+                }
+            }
+        }
+
+        const currentProcess = readyQueue.shift()!; // Dequeue the first process from the ready queue
+        const idx = processes.indexOf(currentProcess);
+        const executionTime = Math.min(timeQuantum, remainingBurstTimes[idx]);
+
+        // Set the start time if it's the first time the process is running
+        if (currentProcess.start_time === undefined) {
+            currentProcess.start_time = currentTime;
+        }
+
+        // Add the current process to the chart with its execution time
+        if (chart.length === 0 || chart[chart.length - 1].id !== currentProcess.id) {
+            chart.push({ id: currentProcess.id, end_time: currentTime + executionTime });
+        } else {
+            chart[chart.length - 1].end_time = currentTime + executionTime;
+        }
+
+        remainingBurstTimes[idx] -= executionTime;
+        currentTime += executionTime;
+
+        // Check if the process is completed
+        if (remainingBurstTimes[idx] === 0) {
+            currentProcess.completion_time = currentTime;
+            currentProcess.turnaround_time = currentProcess.completion_time - currentProcess.arrival_time;
+            currentProcess.waiting_time = currentProcess.turnaround_time - processes[idx].burst_time;
+            completedProcesses.push(currentProcess);
+            completed++;
+        } else {
+            // If the process is not completed, enqueue it back to the end of the ready queue
+            readyQueue.push(currentProcess);
+        }
+
+        // Add new processes that have arrived during the current process's execution to the ready queue
+        for (let i = 0; i < n; i++) {
+            if (processes[i].arrival_time > currentTime - executionTime && processes[i].arrival_time <= currentTime && !readyQueue.includes(processes[i]) && remainingBurstTimes[i] > 0) {
+                readyQueue.push(processes[i]);
+            }
+        }
+    }
+
+    return { process_table: processes, chart };
+}
+
+
+
+
+
+

@@ -33,7 +33,7 @@ export const scheduler_form_schema = z.object({
     selected_algorithm: z
         .object({ key: z.string(), label: z.string() })
         .optional(),
-    time_quantum: z.number().optional(),
+    time_quantum: z.coerce.number({message: "A valid integer is required."}).min(1)
     
 });
 

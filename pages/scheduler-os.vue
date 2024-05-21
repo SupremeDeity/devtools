@@ -21,7 +21,7 @@
                     </UFormGroup>
 
                     <UFormGroup v-if="state.selected_algorithm.key === 'RR'" label="Time Quantum" name="time_quantum">
-                        <UInput type="number" v-model="state.time_quantum" placeholder="For example: 3" />
+                        <UInput v-model="state.time_quantum" placeholder="For example: 3" />
                     </UFormGroup>
 
                     <UFormGroup v-if="
@@ -68,7 +68,7 @@
 import type { Process } from "~/composables/os/process";
 import type { FormSubmitEvent } from "#ui/types";
 import GanttChart from "../components/gantt-chart.vue";
-import { fcfs, npp, pp, sjf, srtf } from "~/composables/os/scheduler_algorithms";
+import { fcfs, npp, pp, rr, sjf, srtf } from "~/composables/os/scheduler_algorithms";
 
 const algorithms = [
     { key: "FCFS", label: "First Come First Serve (FCFS)" },
@@ -76,7 +76,7 @@ const algorithms = [
     { key: "SRTF", label: "[Premptive] Shortest Remaining Time First (SRTF/SJF)" },
     { key: "NPP", label: "[Non Premptive] Priority (NPP)" },
     { key: "PP", label: "[Premptive] Priority (PP)" },
-    // { key: "RR", label: "Round Robin (RR)" },
+    { key: "RR", label: "Round Robin (RR)" },
 ];
 
 const state = reactive({
@@ -230,11 +230,14 @@ async function onSubmit(event: FormSubmitEvent<SchedulerFormSchema>) {
         case "NPP":
             algo = npp;
             break;
+        case "RR":
+            algo = rr;
+            break;
         default:
             algo = fcfs;
     }
 
-    const { process_table, chart } = algo(process);
+    const { process_table, chart } = algo(process, event.data.time_quantum ?? 0);
     output.value = process_table;
     gantt_chart.value = chart;
     algorithmRef.value = selected_algorithm.key;
