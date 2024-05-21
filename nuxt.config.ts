@@ -9,4 +9,7 @@ export default defineNuxtConfig({
       Urbanist: true
     }
   },
+  ui: {
+    icons: ['ph']
+  }
 })
