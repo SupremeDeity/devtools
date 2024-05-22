@@ -1,4 +1,4 @@
-import type { GanttChartEntry } from "./process";
+import type { GanttChartEntry, Process } from "./process";
 
 export function fcfs(processes: Process[]) {
   const process_table = processes.toSorted(
