@@ -345,7 +345,7 @@ export function rr(processes: Process[], timeQuantum: number): { process_table: 
 
         remainingBurstTimes[idx] -= executionTime;
         currentTime += executionTime;
-
+        let toEnqueue = false;
         // Check if the process is completed
         if (remainingBurstTimes[idx] === 0) {
             currentProcess.completion_time = currentTime;
@@ -354,8 +354,8 @@ export function rr(processes: Process[], timeQuantum: number): { process_table: 
             completedProcesses.push(currentProcess);
             completed++;
         } else {
-            // If the process is not completed, enqueue it back to the end of the ready queue
-            readyQueue.push(currentProcess);
+            // If the process is not completed, enqueue it back to the end of the ready queu
+            toEnqueue = true;
         }
 
         // Add new processes that have arrived during the current process's execution to the ready queue
@@ -364,6 +364,7 @@ export function rr(processes: Process[], timeQuantum: number): { process_table: 
                 readyQueue.push(processes[i]);
             }
         }
+      if(toEnqueue) readyQueue.push(currentProcess);
     }
 
     return { process_table: processes, chart };
