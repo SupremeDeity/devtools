@@ -1,25 +1,9 @@
-const precendenceTable = [
-  {
-    token: "+",
-    precendence: 1,
-  },
-  {
-    token: "-",
-    precendence: 1,
-  },
-  {
-    token: "*",
-    precendence: 2,
-  },
-  {
-    token: "/",
-    precendence: 2,
-  },
-  {
-    token: "^",
-    precendence: 3,
-  },
-];
+function getPrecedence(C: string) {
+  if (C == "-" || C == "+") return 1;
+  else if (C == "*" || C == "/") return 2;
+  else if (C == "^") return 3;
+  return 0;
+}
 
 export type NotationOutput = {
   id: number;
@@ -28,7 +12,7 @@ export type NotationOutput = {
   notation: string;
 };
 
-export function infixToPostfix(expression: string) {
+export function infixToPostfix(expression: string, prefix = false) {
   const exp = expression.replace(/\s/g, "");
   let postfix = "";
   const stack: string[] = [];
@@ -53,18 +37,9 @@ export function infixToPostfix(expression: string) {
       case "^": {
         while (
           stack.length > 0 &&
-          precendenceTable.find((val) => val.token === stack[stack.length - 1])
-            ?.precendence! >=
-            precendenceTable.find((val) => val.token === exp.charAt(x))
-              ?.precendence!
+          getPrecedence(stack[stack.length - 1]) >=
+            getPrecedence(exp.charAt(x)) + (prefix ? 1 : 0)
         ) {
-          console.log(
-            precendenceTable.find(
-              (val) => val.token === stack[stack.length - 1]
-            )?.precendence!,
-            precendenceTable.find((val) => val.token === exp.charAt(x))
-              ?.precendence!
-          );
           postfix += stack.pop();
         }
         stack.push(exp.charAt(x));
@@ -127,7 +102,85 @@ export function postfixToInfix(expression: string) {
     }
   }
 
-  output.push({ id: output.length + 1, stack: "", token: "", notation: stack.join("") });
+  output.push({
+    id: output.length + 1,
+    stack: "",
+    token: "",
+    notation: stack.join(""),
+  });
 
   return output;
+}
+
+export function infixToPrefix(expression: string) {
+  const reverseInfix = expression
+    .split("")
+    .map((val) => {
+      if (val === "(") return ")";
+      else if (val === ")") return "(";
+      return val;
+    })
+    .reverse()
+    .join("");
+
+  const output = infixToPostfix(reverseInfix, true);
+
+  output.push({
+    id: output.length + 1,
+    stack: "",
+    token: "",
+    notation: output[output.length - 1].notation?.split("").reverse().join(""),
+  });
+
+  return output;
+}
+
+export function prefixToInfix(expression: string) {
+  const reversed = expression.split("").reverse().join("");
+  const output = postfixToInfix(reversed);
+
+  const reversedPostfix = output[output.length - 1].notation
+    .split("")
+    .map((val) => {
+      if (val === "(") return ")";
+      else if (val === ")") return "(";
+      return val;
+    })
+    .reverse()
+    .join("");
+
+  output.push({
+    id: output.length + 1,
+    notation: reversedPostfix,
+    stack: "",
+    token: "",
+  });
+
+  return output;
+}
+
+export function prefixToPostfix(expression: string) {
+  let infix = prefixToInfix(expression);
+  const postfix = infixToPostfix(infix[infix.length - 1].notation);
+  return [
+    {
+      id: 1,
+      token: "",
+      notation: postfix[postfix.length - 1].notation,
+      stack: "",
+    },
+  ];
+}
+
+export function postfixToPrefix(expression: string) {
+  let infix = postfixToInfix(expression);
+  const prefix = infixToPrefix(infix[infix.length - 1].notation);
+  return [
+    {
+      id: 1,
+      token: "",
+      notation: prefix[prefix.length - 1].notation,
+      stack: "",
+    },
+  ];
 }

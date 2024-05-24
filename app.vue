@@ -4,7 +4,7 @@
       <Title>DevTools</Title>
       <Meta
         name="description"
-        content="Useful tools of all kinds for developers and students."
+        content=""
       />
       <Meta name="twitter:card" content="summary_large_image" />
       <Meta name="twitter:title" content="DevTools" />

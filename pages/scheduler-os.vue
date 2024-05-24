@@ -1,11 +1,11 @@
 <template>
   <Head>
-    <Title>Process Scheduler | DevTools</Title>
-    <Meta name="description" content="Process Scheduling algorithms solver." />
-    <Meta
-      name="keywords"
-      content="FCFS, SRTF, SJF, SJN, RR, PP, Premptive, Non-Premptive, Round Robin, Priority, First Come First Serve, Shortest Job First, Shortest Remaining Time First, Shortest Job Next"
-    />
+    <Title>{{ title }}</Title>
+    <Meta name="twitter:title" :content="title" />
+    <Meta name="og:title" :content="title" />
+    <Meta name="description" :content="description" />
+    <Meta name="twitter:description" :content="description" />
+    <Meta name="og:description" :content="description" />
   </Head>
   <div class="p-4 sm:p-6">
     <UCard>
@@ -112,6 +112,9 @@ import {
 import type { FormSubmitEvent } from "#ui/types";
 import GanttChart from "../components/gantt-chart.vue";
 import { fcfs, npp, pp, rr, sjf, srtf } from "~/lib/os/scheduler_algorithms";
+
+const title = "Process Scheduler | DevTools";
+const description = "Process Scheduling algorithms solver.";
 
 const algorithms = [
   { key: "FCFS", label: "First Come First Serve (FCFS)" },
