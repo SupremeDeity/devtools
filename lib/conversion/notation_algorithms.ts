@@ -160,7 +160,7 @@ export function prefixToInfix(expression: string) {
 }
 
 export function prefixToPostfix(expression: string) {
-  let infix = prefixToInfix(expression);
+  const infix = prefixToInfix(expression);
   const postfix = infixToPostfix(infix[infix.length - 1].notation);
   return [
     {
@@ -173,7 +173,7 @@ export function prefixToPostfix(expression: string) {
 }
 
 export function postfixToPrefix(expression: string) {
-  let infix = postfixToInfix(expression);
+  const infix = postfixToInfix(expression);
   const prefix = infixToPrefix(infix[infix.length - 1].notation);
   return [
     {

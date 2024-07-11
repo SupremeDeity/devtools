@@ -20,10 +20,10 @@
     <div class="grid grid-flow-col justify-center gap-x-10">
       <NuxtLink class="block w-min" href="/scheduler-os">
         <div
-          class="w-max mt-4 rounded-lg bg-primary-100 dark:bg-primary-900/40 border border-primary-200 dark:border-primary-800 hover:bg-primary-200 hover:dark:bg-primary-950 hover:border-primary-400 hover:dark:border-primary-600 transition-colors"
+          class="hover:shadow-lg hover:shadow-primary-600 hover:dark:shadow-primary-900 w-max mt-4 rounded-lg bg-gray-100 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 hover:bg-primary-200 hover:dark:bg-primary-950 hover:border-primary-400 hover:dark:border-primary-600 transition-colors"
         >
           <div
-            class="size-32 flex items-center justify-center font-bold text-lg text-center flex-col"
+            class="size-32 flex items-center justify-center font-bold p-1 text-center flex-col"
           >
             <UIcon name="i-ph-ranking-duotone" class="size-10" />
             Process Scheduler
@@ -32,13 +32,25 @@
       </NuxtLink>
       <NuxtLink class="block w-min" href="/notation-conversion">
         <div
-          class="w-max mt-4 rounded-lg bg-primary-100 dark:bg-primary-900/40 border border-primary-200 dark:border-primary-800 hover:bg-primary-200 hover:dark:bg-primary-950 hover:border-primary-400 hover:dark:border-primary-600 transition-colors"
+          class="hover:shadow-lg hover:shadow-primary-600 hover:dark:shadow-primary-900 w-max mt-4 rounded-lg bg-gray-100 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 hover:bg-primary-200 hover:dark:bg-primary-950 hover:border-primary-400 hover:dark:border-primary-600 transition-colors"
         >
           <div
-            class="size-32 flex items-center justify-center font-bold text-lg text-center flex-col"
+            class="size-32 flex items-center justify-center font-bold p-1 text-center flex-col"
           >
             <UIcon name="i-ph-asterisk-bold" class="size-10" />
             Notation Convertor
+          </div>
+        </div>
+      </NuxtLink>
+      <NuxtLink class="block w-min" href="/chmod-calculator">
+        <div
+          class="hover:shadow-lg hover:shadow-primary-600 hover:dark:shadow-primary-900 w-max mt-4 rounded-lg bg-gray-100 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 hover:bg-primary-200 hover:dark:bg-primary-950 hover:border-primary-400 hover:dark:border-primary-600 transition-colors"
+        >
+          <div
+            class="size-32 flex items-center justify-center font-bold p-1 text-center flex-col"
+          >
+            <UIcon name="i-ph-file-lock-duotone" class="size-10" />
+            Chmod Calculator
           </div>
         </div>
       </NuxtLink>

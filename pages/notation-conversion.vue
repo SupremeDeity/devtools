@@ -1,52 +1,54 @@
 <template>
-  <Head>
-    <Title>{{ title }}</Title>
-    <Meta name="twitter:title" :content="title" />
-    <Meta name="og:title" :content="title" />
-    <Meta name="description" :content="description" />
-    <Meta name="twitter:description" :content="description" />
-    <Meta name="og:description" :content="description" />
-  </Head>
-  <div class="p-4 sm:p-6">
-    <UCard>
-      <template #header>
-        <h1 class="text-lg font-bold dark:text-gray-200 text-gray-800">
-          Notation Converter
-        </h1>
-      </template>
+  <div>
+    <Head>
+      <Title>{{ title }}</Title>
+      <Meta name="twitter:title" :content="title" />
+      <Meta name="og:title" :content="title" />
+      <Meta name="description" :content="description" />
+      <Meta name="twitter:description" :content="description" />
+      <Meta name="og:description" :content="description" />
+    </Head>
+    <div class="p-4 sm:p-6">
+      <UCard>
+        <template #header>
+          <h1 class="text-lg font-bold dark:text-gray-200 text-gray-800">
+            Notation Converter
+          </h1>
+        </template>
+        
+        <UForm
+          :schema="schema"
+          :state="state"
+          class="space-y-4"
+          @submit="onSubmit"
+        >
+          <UFormGroup label="Type" name="type">
+            <USelectMenu v-model="state.type" :options="TypeEnum.options" />
+          </UFormGroup>
 
-      <UForm
-        :schema="schema"
-        :state="state"
-        class="space-y-4"
-        @submit="onSubmit"
-      >
-        <UFormGroup label="Type" name="type">
-          <USelectMenu v-model="state.type" :options="TypeEnum.options" />
-        </UFormGroup>
+          <UFormGroup label="Expression" name="expression">
+            <UInput v-model="state.expression" />
+          </UFormGroup>
 
-        <UFormGroup label="Expression" name="expression">
-          <UInput v-model="state.expression" />
-        </UFormGroup>
+          <UButton type="submit" class="font-bold">Convert</UButton>
+        </UForm>
 
-        <UButton type="submit" class="font-bold">Convert</UButton>
-      </UForm>
+        <template v-if="output" #footer>
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-extrabold p-2 select-none">Output</h3>
+            <UBadge v-if="state.type" variant="subtle">{{ state.type }}</UBadge>
+          </div>
 
-      <template v-if="output" #footer>
-        <div class="flex items-center justify-between">
-          <h3 class="text-lg font-extrabold p-2 select-none">Output</h3>
-          <UBadge v-if="state.type" variant="subtle">{{ state.type }}</UBadge>
-        </div>
-
-        <div class="flex justify-center">
-          <span
-            class="dark:bg-primary-900/40 bg-primary-100/60 font-bold border dark:border-primary-700 border-primary-300 dark:text-primary-300 text-primary-600 p-2 rounded-lg min-w-[50%] text-center"
-            >{{ output[output.length - 1].notation }}</span
-          >
-        </div>
-        <UTable :rows="output" class="mt-4" />
-      </template>
-    </UCard>
+          <div class="flex justify-center">
+            <span
+              class="dark:bg-primary-900/40 bg-primary-100/60 font-bold border dark:border-primary-700 border-primary-300 dark:text-primary-300 text-primary-600 p-2 rounded-lg min-w-[50%] text-center"
+              >{{ output[output.length - 1].notation }}</span
+            >
+          </div>
+          <UTable :rows="output" class="mt-4" />
+        </template>
+      </UCard>
+    </div>
   </div>
 </template>
 
