@@ -77,19 +77,21 @@ const title = "Chmod Calculator | DevTools";
 const description =
   "Online Chmod calculator to easily calculate and understand Unix and Linux file permissions.";
 
-const initialState = {
-  owner: { read: false, write: false, execute: false },
-  public: { read: false, write: false, execute: false },
-  group: { read: false, write: false, execute: false },
+const initialState = () => {
+  return {
+    owner: { read: false, write: false, execute: false },
+    public: { read: false, write: false, execute: false },
+    group: { read: false, write: false, execute: false },
+  };
 };
 
-const state = reactive({ ...initialState });
+const state = reactive(initialState());
 const numericInput = ref("");
 const symbolicInput = ref("");
 const isUpdatingFromState = ref(false);
 
 const reset = () => {
-  Object.assign(state, initialState);
+  Object.assign(state, initialState());
 };
 
 const calculateOctal = (perms: {
