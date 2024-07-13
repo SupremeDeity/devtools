@@ -76,7 +76,11 @@ const reset = () => {
   Object.assign(state, initialState);
 };
 
-const calculateOctal = (perms) => {
+const calculateOctal = (perms: {
+  read: boolean;
+  write: boolean;
+  execute: boolean;
+}) => {
   return (perms.read ? 4 : 0) + (perms.write ? 2 : 0) + (perms.execute ? 1 : 0);
 };
 
@@ -89,7 +93,7 @@ const setStateFromOctal = () => {
   const group = Math.floor((value % 100) / 10);
   const public_ = value % 10;
 
-  const fromOctal = (octal) => ({
+  const fromOctal = (octal: number) => ({
     read: (octal & 4) !== 0,
     write: (octal & 2) !== 0,
     execute: (octal & 1) !== 0,
@@ -105,7 +109,7 @@ const setStateFromSymbolic = () => {
     return;
   }
 
-  const parseSymbolic = (str) => ({
+  const parseSymbolic = (str: string | string[]) => ({
     read: str[0] === "r",
     write: str[1] === "w",
     execute: str[2] === "x",
@@ -116,7 +120,11 @@ const setStateFromSymbolic = () => {
   state.public = parseSymbolic(symbolicInput.value.slice(6, 9));
 };
 
-const calculateSymbolic = (perms) => {
+const calculateSymbolic = (perms: {
+  read: boolean;
+  write: boolean;
+  execute: boolean;
+}) => {
   return (
     (perms.read ? "r" : "-") +
     (perms.write ? "w" : "-") +
@@ -124,7 +132,6 @@ const calculateSymbolic = (perms) => {
   );
 };
 
-// Update inputs when state changes
 watchEffect(() => {
   if (isUpdatingFromState.value) return;
 
@@ -144,7 +151,6 @@ watchEffect(() => {
   isUpdatingFromState.value = false;
 });
 
-// Functions to handle blur events
 const handleNumericBlur = () => {
   if (!isUpdatingFromState.value) {
     setStateFromOctal();

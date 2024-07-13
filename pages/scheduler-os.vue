@@ -150,7 +150,8 @@ const average_times = computed(() => {
   if (!output.value)
     return { average_turnaround_time: 0, average_waiting_time: 0 };
   const { totalTurnaroundTime, totalWaitingTime } = output.value.reduce(
-    (totals: unknown, process: Process) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (totals: any, process: Process) => {
       return {
         totalTurnaroundTime:
           totals.totalTurnaroundTime + (process.turnaround_time || 0),
