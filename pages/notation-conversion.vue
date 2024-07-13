@@ -4,6 +4,10 @@
       <Title>{{ title }}</Title>
       <Meta name="twitter:title" :content="title" />
       <Meta name="og:title" :content="title" />
+      <Meta
+        name="keywords"
+        content="Infix to Postfix, Postfix to Infix, Infix to Prefix, Prefix to Infix, Prefix to Postfix, Postfix to Prefix, expression conversion, online tool, algorithm, infix, postfix, prefix, conversion tool"
+      />
       <Meta name="description" :content="description" />
       <Meta name="twitter:description" :content="description" />
       <Meta name="og:description" :content="description" />
@@ -15,7 +19,7 @@
             Notation Converter
           </h1>
         </template>
-        
+
         <UForm
           :schema="schema"
           :state="state"

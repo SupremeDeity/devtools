@@ -1,5 +1,17 @@
 <template>
   <div class="p-4 sm:p-6">
+    <Head>
+      <Title>{{ title }}</Title>
+      <Meta name="twitter:title" :content="title" />
+      <Meta name="og:title" :content="title" />
+      <Meta
+        name="keywords"
+        content="Chmod calculator, file permissions, Unix permissions, Linux permissions, Chmod, calculate Chmod, permission calculator, file mode, online tool, chmod command, Unix, Linux, file access, security"
+      />
+      <Meta name="description" :content="description" />
+      <Meta name="twitter:description" :content="description" />
+      <Meta name="og:description" :content="description" />
+    </Head>
     <UCard>
       <template #header>
         <h1 class="text-lg font-bold dark:text-gray-200 text-gray-800">
@@ -61,6 +73,10 @@
   </div>
 </template>
 <script setup lang="ts">
+const title = "Chmod Calculator | DevTools";
+const description =
+  "Online Chmod calculator to easily calculate and understand Unix and Linux file permissions.";
+
 const initialState = {
   owner: { read: false, write: false, execute: false },
   public: { read: false, write: false, execute: false },

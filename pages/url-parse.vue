@@ -1,5 +1,17 @@
 <template>
   <div class="p-4 sm:p-6">
+    <Head>
+      <Title>{{ title }}</Title>
+      <Meta name="twitter:title" :content="title" />
+      <Meta name="og:title" :content="title" />
+      <Meta
+        name="keywords"
+        content="URL, URL properties, URL encode, URL decode, add URL parameters, remove URL parameters, URL tools, web development, online tools"
+      />
+      <Meta name="description" :content="description" />
+      <Meta name="twitter:description" :content="description" />
+      <Meta name="og:description" :content="description" />
+    </Head>
     <UCard>
       <template #header>
         <h1 class="text-lg font-bold dark:text-gray-200 text-gray-800">
@@ -27,7 +39,7 @@
           <UButton @click="addParam">Add Param</UButton>
         </div>
         <div class="mt-6 flex flex-col gap-4">
-          <strong class="min-w-max">New URL</strong>
+          <strong class="min-w-max">New URL (Encoded)</strong>
           <span
             class="p-2 rounded w-full text-gray-700 bg-gray-200 dark:text-gray-300 dark:bg-gray-800"
             >{{ newUrl }}</span
@@ -39,6 +51,9 @@
 </template>
 
 <script setup lang="ts">
+const title = "URL Parse | DevTools";
+const description =
+  "Easily list URL properties, encode and decode URLs, and add or remove URL parameters.";
 const toast = useToast();
 
 const urlString = ref("");

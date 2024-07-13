@@ -4,6 +4,10 @@
       <Title>{{ title }}</Title>
       <Meta name="twitter:title" :content="title" />
       <Meta name="og:title" :content="title" />
+      <Meta
+        name="keywords"
+        content="process scheduling, CPU scheduling, FCFS, First Come First Serve, SJF, Non Preemptive Shortest Job First, SRTF, Preemptive Shortest Remaining Time First, NPP, Non Preemptive Priority, PP, Preemptive Priority, Round Robin, RR, scheduling algorithms, online tool"
+      />
       <Meta name="description" :content="description" />
       <Meta name="twitter:description" :content="description" />
       <Meta name="og:description" :content="description" />
