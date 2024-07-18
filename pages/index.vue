@@ -9,8 +9,7 @@
       color="primary"
     >
       <template #title="{ title }">
-        <!-- eslint-disable-next-line vue/no-v-html -->
-        <span class="font-bold" v-html="title" />
+        <span class="font-bold">{{ title }}</span>
       </template>
       <template #icon="{ icon }">
         <UBadge size="md">
@@ -39,6 +38,11 @@
         title="Grid Pattern Generator"
         href="/grid-pattern-generator"
         icon="i-ph-grid-nine-duotone"
+      />
+      <CardItem
+        title="Color Shades Generator"
+        href="/color-shades-generator"
+        icon="i-ph-paint-brush-broad-duotone"
       />
     </div>
   </div>
