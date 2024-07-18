@@ -6,6 +6,7 @@
           Color Shades Generator
         </h1>
       </template>
+
       <div class="flex items-center justify-center gap-4">
         <ColorPicker v-model="color" />
         <UInput v-model="color" />
@@ -13,61 +14,26 @@
       </div>
       <template #footer>
         <div
-          class="flex justify-evenly min-[410px]:max-md:flex-row flex-col gap-4 items-center"
+          class="flex justify-evenly min-[410px]:max-lg:flex-row flex-col gap-4 items-center"
         >
-          <div>
-            <span class="font-semibold text-lg">Lighter Shades</span>
-            <div class="flex md:flex-row flex-col justify-center">
-              <div
-                v-for="(lShade, index) in lightShades"
-                :key="lShade"
-                class="flex md:flex-col gap-2 items-center text-sm"
-              >
-                <span class="font-semibold text-primary order-3 md:order-1"
-                  >{{ index * 10 }}%</span
-                >
-                <span
-                  class="p-8 hover:scale-125 hover:border-2 hover:rounded order-2"
-                  :style="{
-                    backgroundColor: lShade,
-                    borderColor: pSBC(0.5, lShade),
-                  }"
-                  @click="copyColor(lShade)"
-                />
-                <span
-                  class="font-semibold order-2 max-w-[60px] text-center break-words"
-                  >{{ lShade }}</span
-                >
-              </div>
-            </div>
-          </div>
-          <div>
-            <span class="font-semibold text-lg">Darker Shades</span>
-            <div class="flex md:flex-row flex-col justify-center">
-              <div
-                v-for="(dShade, index) in darkShades"
-                :key="dShade"
-                class="flex md:flex-col gap-2 items-center text-sm"
-              >
-                <span class="font-semibold text-primary order-3 md:order-1"
-                  >{{ index * 10 }}%</span
-                >
-                <span
-                  class="p-8 hover:scale-125 hover:border-2 hover:rounded order-2"
-                  :style="{
-                    backgroundColor: dShade,
-                    borderColor: pSBC(0.5, dShade),
-                  }"
-                  @click="copyColor(dShade)"
-                />
-                <span
-                  class="font-semibold order-2 max-w-[60px] text-center break-words"
-                  >{{ dShade }}</span
-                >
-              </div>
-            </div>
-          </div>
+          <ColorShades title="Lighter Shades" :shades="lightShades" />
+          <ColorShades title="Darker Shades" :shades="darkShades" />
         </div>
+        <UAlert color="green" variant="soft" icon="i-ph-info" class="mt-6">
+          <template #title
+            ><span class="font-bold">Color Copy Tip</span></template
+          >
+          <template #description>
+            <li>
+              <span class="font-bold">Click color patch:</span> Copy in original
+              format
+            </li>
+            <li>
+              <span class="font-bold">Click color code:</span> Copy in alternate
+              format (RGB ↔ HEX)
+            </li>
+          </template>
+        </UAlert>
       </template>
     </UCard>
   </div>
@@ -75,11 +41,6 @@
 
 <script lang="js" setup>
 import pSBC from "~/lib/color/pSBC";
-import {  useClipboard } from '@vueuse/core';
-
-const toast = useToast();
-const { copy, isSupported } = useClipboard()
-
 const color = ref("#09EF20")
 const logBlend = ref(true)
 
@@ -87,14 +48,4 @@ const logBlend = ref(true)
 const noOfShades = 11;
 const lightShades = computed(() => Array(noOfShades).fill().map((_, v) => pSBC(v/noOfShades, color.value, false, logBlend.value)));
 const darkShades = computed(() => Array(noOfShades).fill().map((_, v) => pSBC(-v/noOfShades, color.value, false, logBlend.value)));
-
-const copyColor = (shade) => {
-  if(!isSupported) {
-    toast.add({title: "Unsupported action", description: "Cannot copy to clipboard.", color: "red", icon: "i-heroicons-x-circle",})
-    return;
-  }
-
-  copy(shade)
-  toast.add({title: "Copied color hex to clipboard"})
-}
 </script>

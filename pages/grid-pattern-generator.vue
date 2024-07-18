@@ -76,6 +76,7 @@
 </template>
 
 <script lang="js" setup>
+// TODO: Investigate if UTooltip causes performance issues on frequent change
 import { generateGridPattern } from "~/lib/generator/grid-pattern";
 import { useDebounceFn, useClipboard } from '@vueuse/core';
 

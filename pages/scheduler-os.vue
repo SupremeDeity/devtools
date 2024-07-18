@@ -87,7 +87,7 @@
           </div>
           <div class="w-full flex flex-col items-center p-4">
             <span class="font-bold select-none">Gantt Chart</span>
-            <GanttChart :gantt_chart="gantt_chart" />
+            <GanttChart :gantt-chart="gantt_chart" />
           </div>
 
           <UTable
@@ -119,7 +119,7 @@ import {
   type SchedulerFormSchema,
 } from "~/lib/os/process";
 import type { FormSubmitEvent } from "#ui/types";
-import GanttChart from "../components/gantt-chart.vue";
+import GanttChart from "../components/GanttChart.vue";
 import { fcfs, npp, pp, rr, sjf, srtf } from "~/lib/os/scheduler_algorithms";
 
 const title = "Process Scheduler | DevTools";
