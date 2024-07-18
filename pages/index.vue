@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 <template>
   <div class="p-6">
-    <UAlert
+    <!-- <UAlert
       icon="i-ph-bell-ringing-duotone"
       description="This site is under development and you might find bugs and uncompleted things. Open up a issue on github if you find a bug."
       title="Heads up!"
@@ -16,7 +16,7 @@
           <UIcon :name="icon" />
         </UBadge>
       </template>
-    </UAlert>
+    </UAlert> -->
     <div class="grid grid-flow-col grid-rows-2 justify-center gap-x-10">
       <CardItem
         title="Process Scheduler"
