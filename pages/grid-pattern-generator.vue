@@ -11,6 +11,20 @@
           Gradient Mask:
           <UToggle v-model="gradientMask" />
         </div>
+        <div class="flex gap-5 items-center justify-between font-bold">
+          <span class="flex gap-2 items-center"
+            >Fill Mode<UTooltip
+              text="Use color blend or opacity for the filled boxes."
+              ><Icon
+                class="text-slate-600 hover:text-slate-700 dark:text-slate-400 hover:dark:text-slate-300 w-max"
+                name="i-ph-info" /></UTooltip
+          ></span>
+          <div class="gap-3 flex font-normal text-sm items-center">
+            Blend
+            <UToggle v-model="opacityFillMode" />
+            Opacity
+          </div>
+        </div>
         <div class="font-bold">
           Amount: <URange v-model.number="amount" :min="10" :max="50" />
         </div>
@@ -43,13 +57,13 @@
         </div>
       </div>
     </UCard>
-    <UCard class="w-full min-w-max">
+    <UCard class="grow">
       <div class="flex flex-col gap-5 items-center">
         <div
           class="rounded-xl min-h-96 h-full overflow-hidden"
           :style="patternStyle"
         />
-        <div class="flex gap-5 justify-center">
+        <div class="flex gap-5 justify-center items-center">
           <UButton class="self-center" @click="generate">Regenerate</UButton>
           <UButton class="self-center" @click="copyCSS"
             ><span v-if="!copied">Copy CSS</span>
@@ -73,6 +87,9 @@ const density = ref(1);
 const fillChance = ref(0.3);
 const strokeWidth = ref(0.015);
 const gradientMask = ref(true);
+// False = Blend, True = Opacity
+const opacityFillMode = ref(false);
+
 const { copy, copied, isSupported } = useClipboard()
 const toast = useToast()
 
@@ -85,6 +102,7 @@ const copyCSS = () => {
   }
 
   copy(patternStyle.value)
+  toast.add({title: "Copied CSS to clipboard"})
 }
 
 const generate = () => {
@@ -100,7 +118,8 @@ const generate = () => {
           density.value,
           fillChance.value,
           gradientMask.value,
-          strokeWidth.value.toString()
+          strokeWidth.value.toString(),
+          opacityFillMode.value
         );
         updatePending = false;
       });
@@ -111,7 +130,7 @@ const generate = () => {
 const debouncedGenerate = useDebounceFn(generate, 70);
 
 watch(
-  [amount, baseColor, frontColor, density, fillChance, gradientMask, strokeWidth],
+  [amount, baseColor, frontColor, density, fillChance, gradientMask, strokeWidth, opacityFillMode],
   debouncedGenerate
 );
 
