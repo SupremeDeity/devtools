@@ -129,7 +129,7 @@ const generate = () => {
   }
 };
 
-const debouncedGenerate = useDebounceFn(generate, 5);
+const debouncedGenerate = useDebounceFn(generate, amount.value / 1.8);
 
 watch(
   [amount, baseColor, frontColor, density, fillChance, gradientMask, strokeWidth, opacityFillMode],
