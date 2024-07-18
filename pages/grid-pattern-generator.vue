@@ -13,12 +13,13 @@
         </div>
         <div class="flex gap-5 items-center justify-between font-bold">
           <span class="flex gap-2 items-center"
-            >Fill Mode<UTooltip
-              text="Use color blend or opacity for the filled boxes."
+            >Fill Mode
+            <UTooltip text="Use color blend or opacity for the filled boxes."
               ><Icon
                 class="text-slate-600 hover:text-slate-700 dark:text-slate-400 hover:dark:text-slate-300 w-max"
-                name="i-ph-info" /></UTooltip
-          ></span>
+                name="i-ph-info"
+            /></UTooltip>
+          </span>
           <div class="gap-3 flex font-normal text-sm items-center">
             Blend
             <UToggle v-model="opacityFillMode" />
@@ -76,7 +77,6 @@
 </template>
 
 <script lang="js" setup>
-// TODO: Investigate if UTooltip causes performance issues on frequent change
 import { generateGridPattern } from "~/lib/generator/grid-pattern";
 import { useDebounceFn, useClipboard } from '@vueuse/core';
 
@@ -88,6 +88,7 @@ const density = ref(1);
 const fillChance = ref(0.3);
 const strokeWidth = ref(0.015);
 const gradientMask = ref(true);
+
 // False = Blend, True = Opacity
 const opacityFillMode = ref(false);
 
@@ -128,7 +129,7 @@ const generate = () => {
   }
 };
 
-const debouncedGenerate = useDebounceFn(generate, 70);
+const debouncedGenerate = useDebounceFn(generate, 5);
 
 watch(
   [amount, baseColor, frontColor, density, fillChance, gradientMask, strokeWidth, opacityFillMode],
