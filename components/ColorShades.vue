@@ -1,17 +1,17 @@
 <template>
-  <div>
+  <div class="min-h-[920px] lg:min-h-[175px] min-w-[175px]">
     <span class="font-semibold text-lg">{{ props.title }}</span>
-    <div class="flex lg:flex-row flex-col justify-center gap-2">
+    <div class="flex lg:flex-row flex-col justify-center">
       <div
         v-for="(lShade, index) in props.shades"
         :key="lShade"
-        class="flex lg:flex-col gap-2 items-center text-sm"
+        class="flex lg:flex-col gap-2 items-center text-sm min-w-20 min-h-20"
       >
         <span class="font-semibold text-primary order-3 lg:order-1"
           >{{ index * 10 }}%</span
         >
         <span
-          class="p-8 hover:scale-125 hover:border-2 hover:rounded order-2 rounded cursor-pointer transition-transform"
+          class="p-8 hover:border-2 hover:rounded order-2 rounded cursor-pointer transition-transform"
           :style="{
             backgroundColor: lShade,
             borderColor: pSBC(0.5, lShade),

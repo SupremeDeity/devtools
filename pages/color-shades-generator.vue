@@ -14,12 +14,12 @@
       </div>
       <template #footer>
         <div
-          class="flex justify-evenly min-[410px]:max-lg:flex-row flex-col gap-4 items-center"
+          class="flex justify-evenly min-[410px]:max-lg:flex-row flex-col items-center w-full"
         >
           <ColorShades title="Lighter Shades" :shades="lightShades" />
           <ColorShades title="Darker Shades" :shades="darkShades" />
         </div>
-        <UAlert color="green" variant="soft" icon="i-ph-info" class="mt-6">
+        <UAlert color="green" variant="soft" icon="i-ph-info">
           <template #title
             ><span class="font-bold">Color Copy Tip</span></template
           >
